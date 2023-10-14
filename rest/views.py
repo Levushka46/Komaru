@@ -25,19 +25,21 @@ class UserViewSet(
 
     @action(detail=False, methods=["post"])
     def register(self, request):
-        conflict_users = User.objects.filter(Q(email=request.data.get("email"))|Q(username=request.data.get("username")))
+        conflict_users = User.objects.filter(
+            Q(email=request.data.get("email")) | Q(username=request.data.get("username"))
+        )
         if conflict_users.exists():
             raise exceptions.ConflictError({"error": "Conflict", "message": "User already exists"})
 
         try:
             response = self.create(request)
         except serializers.ValidationError:
-            raise serializers.ValidationError({"error": "Bad Request", "message": "Invalid data"}) 
+            raise serializers.ValidationError({"error": "Bad Request", "message": "Invalid data"})
 
         return Response(
             data={
                 "message": "User registered successfully",
-                "user_id": response.data['id'],
+                "user_id": response.data["id"],
             },
             status=status.HTTP_201_CREATED,
         )

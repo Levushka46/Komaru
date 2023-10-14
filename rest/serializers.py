@@ -7,21 +7,19 @@ from rest_framework import serializers
 
 
 class BaseUserSerializer(ModelSerializer):
-    
     def create(self, validated_data):
         try:
-            validate_password(validated_data['password'])
+            validate_password(validated_data["password"])
         except ValidationError:
             raise serializers.ValidationError()
 
-        user = User.objects.create_user(
-            **validated_data
-        )
+        user = User.objects.create_user(**validated_data)
         return user
 
     class Meta:
         model = User
-        fields = ['id', 'first_name', 'last_name', 'username', 'email', 'password']
-        read_only_fields = ['id']
-        extra_kwargs = {'password': {'write_only': True,
-                                     'style': {'input_type': 'password'}}, }
+        fields = ["id", "first_name", "last_name", "username", "email", "password"]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "password": {"write_only": True, "style": {"input_type": "password"}},
+        }
