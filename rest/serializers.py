@@ -6,7 +6,18 @@ from rest_framework.serializers import Serializer, CharField, ModelSerializer, I
 from rest_framework import serializers
 
 
+class PostSerializer(ModelSerializer):
+    post_id = serializers.IntegerField(read_only=True, source="id")
+    author = serializers.CharField(read_only=True, source="user.username")
+
+    class Meta:
+        model = Post
+        fields = ["post_id", "title", "content", "author"]
+
+
 class BaseUserSerializer(ModelSerializer):
+    posts = PostSerializer(read_only=True, many=True)
+
     def create(self, validated_data):
         try:
             validate_password(validated_data["password"])
@@ -18,7 +29,7 @@ class BaseUserSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["id", "first_name", "last_name", "username", "email", "password"]
+        fields = ["id", "first_name", "last_name", "username", "email", "password", "posts"]
         read_only_fields = ["id"]
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
@@ -30,12 +41,3 @@ class FriendListSerializer(ModelSerializer):
         model = User
         fields = ["id", "username", "email"]
         read_only_fields = ["id", "username", "email"]
-
-
-class PostSerializer(ModelSerializer):
-    post_id = serializers.IntegerField(read_only=True, source="id")
-    author = serializers.CharField(read_only=True, source="user.username")
-
-    class Meta:
-        model = Post
-        fields = ["post_id", "title", "content", "author"]
