@@ -14,20 +14,20 @@ class User(AbstractUser):
 
 
 class Friend(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friends")
-    friend_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friends")
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
 
 
 class Post(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posted")
-    wall_owner_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posted")
+    wall_owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
 
 class Session(models.Model):
-    user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sessions")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sessions")
     jwt_token = models.CharField(max_length=256)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

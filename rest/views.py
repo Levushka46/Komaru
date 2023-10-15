@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db import transaction
 from django.db.models import Q
 from .serializers import BaseUserSerializer
-from .models import User
+from .models import User, Friend
 from rest import exceptions
 
 from rest_framework import serializers
@@ -14,6 +14,7 @@ from rest_framework.generics import (
     GenericAPIView,
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
+from rest_framework.views import APIView
 from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -74,3 +75,21 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, GenericViewSet):
     queryset = User.objects.all()
     serializer_class = BaseUserSerializer
     lookup_field = "username"
+
+
+class FriendView(APIView):
+    def post(self, request, username=None):
+        user = request.user
+        try:
+            friend = User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise NotFound({"error": "Not Found", "message": "User does not exist"})
+
+        if user.id == friend.id:
+            raise ParseError({"error": "Bad Request", "message": "Cannot make friends with yourself"})
+
+        Friend.objects.create(user_id=user.id, friend_id=friend.id)
+        return Response(
+            {"message": "Friend added successfully", "friend_username": friend.username},
+            status=status.HTTP_201_CREATED,
+        )
