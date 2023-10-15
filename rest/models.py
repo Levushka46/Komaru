@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     username = models.CharField(_("username"), max_length=30, null=False, unique=True)
     email = models.EmailField(_("email address"), max_length=255, null=False, unique=True)
-
+    friends = models.ManyToManyField('self', through='Friend', through_fields=('user', 'friend'))
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
     def __str__(self):
@@ -14,7 +14,7 @@ class User(AbstractUser):
 
 
 class Friend(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="friends")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
     friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
 
 

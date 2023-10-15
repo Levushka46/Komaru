@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db import transaction
-from django.db.models import Q
-from .serializers import BaseUserSerializer
+from django.db.models import Q, F
+from .serializers import BaseUserSerializer, FriendListSerializer
 from .models import User, Friend
 from rest import exceptions
 
@@ -108,3 +108,10 @@ class UnFriendView(APIView):
             {"message": "Friend removed successfully", "friend_username": username},
             status=status.HTTP_200_OK,
         )
+
+
+class FriendListViewSet(mixins.ListModelMixin, GenericViewSet):
+    serializer_class = FriendListSerializer
+
+    def get_queryset(self):
+        return self.request.user.friends.all()

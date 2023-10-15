@@ -23,3 +23,10 @@ class BaseUserSerializer(ModelSerializer):
         extra_kwargs = {
             "password": {"write_only": True, "style": {"input_type": "password"}},
         }
+
+
+class FriendListSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email"]
+        read_only_fields = ["id", "username", "email"]
