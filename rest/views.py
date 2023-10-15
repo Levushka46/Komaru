@@ -15,7 +15,7 @@ from rest_framework.generics import (
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed
+from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed, PermissionDenied
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -71,10 +71,15 @@ class LoginJWTView(TokenObtainPairView):
         )
 
 
-class UserProfileViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, GenericViewSet):
     queryset = User.objects.all()
     serializer_class = BaseUserSerializer
     lookup_field = "username"
+
+    def update(self, request, *args, **kwargs):
+        if request.user.username != kwargs.get("username"):
+            raise PermissionDenied({"error": "Forbidden", "message": "You can only update your profile"})
+        return super().update(request, *args, **kwargs)
 
 
 class FriendView(APIView):
