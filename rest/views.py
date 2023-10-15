@@ -7,7 +7,12 @@ from rest import exceptions
 
 from rest_framework import serializers
 from rest_framework import mixins, status
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView
+from rest_framework.generics import (
+    CreateAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    GenericAPIView,
+)
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed
 from rest_framework.decorators import action
@@ -63,3 +68,9 @@ class LoginJWTView(TokenObtainPairView):
             status=status.HTTP_200_OK,
             headers={"Authorization": access_token},
         )
+
+
+class UserProfileViewSet(mixins.RetrieveModelMixin, GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = BaseUserSerializer
+    lookup_field = "username"
