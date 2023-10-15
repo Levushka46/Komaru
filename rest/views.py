@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.db import transaction
 from django.db.models import Q, F
-from .serializers import BaseUserSerializer, FriendListSerializer
-from .models import User, Friend
+from .serializers import BaseUserSerializer, FriendListSerializer, PostSerializer
+from .models import User, Friend, Post
 from rest import exceptions
 
 from rest_framework import serializers
@@ -120,3 +120,22 @@ class FriendListViewSet(mixins.ListModelMixin, GenericViewSet):
 
     def get_queryset(self):
         return self.request.user.friends.all()
+
+
+class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+
+    def perform_create(self, serializer):
+        try:
+            wall_owner = User.objects.get(username=self.kwargs.get("username"))
+        except User.DoesNotExist:
+            raise NotFound({"error": "Not Found", "message": "User does not exist"})
+
+        if wall_owner.id != self.request.user.id:
+            if not wall_owner.friends.filter(id=self.request.user.id).exists():
+                raise PermissionDenied(
+                    {"error": "Forbidden", "message": "You do not have permission to perform this action"}
+                )
+
+        serializer.save(user=self.request.user, wall_owner=wall_owner)

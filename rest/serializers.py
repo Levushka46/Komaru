@@ -1,5 +1,5 @@
 from rest import exceptions
-from .models import User
+from .models import User, Post
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from rest_framework.serializers import Serializer, CharField, ModelSerializer, IntegerField
@@ -30,3 +30,12 @@ class FriendListSerializer(ModelSerializer):
         model = User
         fields = ["id", "username", "email"]
         read_only_fields = ["id", "username", "email"]
+
+
+class PostSerializer(ModelSerializer):
+    post_id = serializers.IntegerField(read_only=True, source="id")
+    author = serializers.CharField(read_only=True, source="user.username")
+
+    class Meta:
+        model = Post
+        fields = ["post_id", "title", "content", "author"]

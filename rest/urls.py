@@ -20,5 +20,6 @@ urlpatterns = [
     ),
     path("users/friend/<str:username>/", views.FriendView.as_view(), name="user_friend"),
     path("users/unfriend/<str:username>/", views.UnFriendView.as_view(), name="user_unfriend"),
+    path("users/posts/<str:username>/", views.PostViewSet.as_view({"post": "create"}), name="post_create"),
     path("", include(router.urls)),
 ]
