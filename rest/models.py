@@ -6,7 +6,7 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     username = models.CharField(_("username"), max_length=30, null=False, unique=True)
     email = models.EmailField(_("email address"), max_length=255, null=False, unique=True)
-    friends = models.ManyToManyField('self', through='Friend', through_fields=('user', 'friend'))
+    friends = models.ManyToManyField("self", through="Friend", through_fields=("user", "friend"))
     REQUIRED_FIELDS = ["email", "first_name", "last_name"]
 
     def __str__(self):
