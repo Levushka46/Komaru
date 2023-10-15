@@ -93,3 +93,18 @@ class FriendView(APIView):
             {"message": "Friend added successfully", "friend_username": friend.username},
             status=status.HTTP_201_CREATED,
         )
+
+
+class UnFriendView(APIView):
+    def delete(self, request, username=None):
+        user = request.user
+        try:
+            friendship = Friend.objects.get(user_id=user.id, friend__username=username)
+        except Friend.DoesNotExist:
+            raise NotFound({"error": "Not Found", "message": "Friend does not exist"})
+
+        friendship.delete()
+        return Response(
+            {"message": "Friend removed successfully", "friend_username": username},
+            status=status.HTTP_200_OK,
+        )

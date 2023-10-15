@@ -14,5 +14,6 @@ urlpatterns = [
     path("users/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("", include(router.urls)),
     path("users/profile/<str:username>/", views.UserProfileViewSet.as_view({"get": "retrieve"}), name="user_profile"),
-    path("users/friend/<str:username>/", views.FriendView.as_view(), name="user_profile"),
+    path("users/friend/<str:username>/", views.FriendView.as_view(), name="user_friend"),
+    path("users/unfriend/<str:username>/", views.UnFriendView.as_view(), name="user_unfriend"),
 ]
