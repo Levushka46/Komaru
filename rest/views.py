@@ -133,7 +133,7 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    def perform_create(self, serializer: PostSerializer) -> Post:
+    def perform_create(self, serializer: PostSerializer):
         try:
             wall_owner = User.objects.get(username=self.kwargs.get("username"))
         except User.DoesNotExist:
