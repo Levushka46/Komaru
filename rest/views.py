@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.db import transaction
 from django.db.models import Q, F
 from .serializers import BaseUserSerializer, FriendListSerializer, PostSerializer
-from .models import User, Friend, Post
+from .models import User, Friend, Post, Session
 from rest import exceptions
+from datetime import datetime, timedelta
 
 from rest_framework import serializers
 from rest_framework import mixins, status
@@ -63,7 +64,13 @@ class LoginJWTView(TokenObtainPairView):
         except (TokenError, AuthenticationFailed):
             raise AuthenticationFailed({"error": "Unauthorized", "message": "Invalid credentials"})
 
-        access_token = f'Bearer {serializer.validated_data["access"]}'
+        jwt_token = serializer.validated_data["access"]
+        user = serializer.user
+
+        Session.objects.filter(user=user, expires_at__lt=datetime.now()).delete()
+        Session.objects.create(user=user, jwt_token=jwt_token, expires_at=datetime.now() + timedelta(minutes=5))
+
+        access_token = f"Bearer {jwt_token}"
         return Response(
             {"message": "Logged in successfully", "username": request.data["username"]},
             status=status.HTTP_200_OK,
