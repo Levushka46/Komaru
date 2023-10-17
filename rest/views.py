@@ -83,14 +83,14 @@ class UserProfileViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, Gen
     serializer_class = BaseUserSerializer
     lookup_field = "username"
 
-    def update(self, request, *args, **kwargs):
+    def update(self, request: Request, *args, **kwargs) -> Response:
         if request.user.username != kwargs.get("username"):
             raise PermissionDenied({"error": "Forbidden", "message": "You can only update your profile"})
         return super().update(request, *args, **kwargs)
 
 
 class FriendView(APIView):
-    def post(self, request, username=None):
+    def post(self, request: Request, username=None) -> Response:
         user = request.user
         try:
             friend = User.objects.get(username=username)
@@ -108,7 +108,7 @@ class FriendView(APIView):
 
 
 class UnFriendView(APIView):
-    def delete(self, request, username=None):
+    def delete(self, request: Request, username=None) -> Response:
         user = request.user
         try:
             friendship = Friend.objects.get(user_id=user.id, friend__username=username)
@@ -133,7 +133,7 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
     queryset = Post.objects.all()
     serializer_class = PostSerializer
 
-    def perform_create(self, serializer):
+    def perform_create(self, serializer: PostSerializer) -> Post:
         try:
             wall_owner = User.objects.get(username=self.kwargs.get("username"))
         except User.DoesNotExist:
