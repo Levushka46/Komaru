@@ -12,6 +12,7 @@ router.register(r"users", views.UserViewSet, basename="user")
 urlpatterns = [
     path("users/login/", views.LoginJWTView.as_view(), name="token_obtain_pair"),
     path("users/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("users/revoke/", views.RevokeSesionView.as_view(), name="session_revoke"),
     path("users/friends/", views.FriendListViewSet.as_view({"get": "list"}), name="user_friend_list"),
     path(
         "users/profile/<str:username>/",

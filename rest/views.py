@@ -146,3 +146,13 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
                 )
 
         serializer.save(user=self.request.user, wall_owner=wall_owner)
+
+
+class RevokeSesionView(APIView):
+    def delete(self, request: Request) -> Response:
+        Session.objects.filter(user=request.user).delete()
+
+        return Response(
+            {"message": "Sessions have been revoked successfully", "username": request.user.username},
+            status=status.HTTP_200_OK,
+        )
