@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+
+  web:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: komaru_web
+    # '/start' is the shell script used to run the service
+    command: /app/start.sh
+    # this volume is used to map the files and folders on the host to the container
+    # so if we change code on the host, code in the docker container will also be changed
+    volumes:
+      - .:/app
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_DB: "komarudb"
+      POSTGRES_USER: "komaru"
+      POSTGRES_PASSWORD: "komaru_password"
+    ports:
+      - "5432:5432"
