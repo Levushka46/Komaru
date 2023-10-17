@@ -16,7 +16,7 @@ from rest_framework.generics import (
 )
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed, PermissionDenied
+from rest_framework.exceptions import NotFound, ParseError, AuthenticationFailed, PermissionDenied, NotAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -150,6 +150,9 @@ class PostViewSet(mixins.CreateModelMixin, GenericViewSet):
 
 class RevokeSesionView(APIView):
     def delete(self, request: Request) -> Response:
+        if request.user.is_anonymous:
+            raise NotAuthenticated({"error": "Unauthorized", "message": "User unauthorized"})
+
         Session.objects.filter(user=request.user).delete()
 
         return Response(
